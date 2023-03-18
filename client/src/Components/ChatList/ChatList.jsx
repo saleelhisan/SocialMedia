@@ -48,7 +48,7 @@ const ChatList = () => {
       <Card sx={{
         boxShadow: `-1px 6px 5px 3px rgba(0,0,0,0.25)`,
         height: "90vh",
-        width: "98%"
+        width: "100%"
       }} >
         <Box sx={{
           textAlign: "center"

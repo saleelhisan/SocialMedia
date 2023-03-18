@@ -1,5 +1,5 @@
 import express from "express";
-import { getUser, login, register, addProfilePic, editUserProfile, getAllUsers, followTheUser, unFollowTheUser } from "../controllers/userController.js";
+import { getUser, login, googleLogin,googleSignup,register, addProfilePic, editUserProfile, getAllUsers, followTheUser, unFollowTheUser } from "../controllers/userController.js";
 import { verifyToken } from '../middleware/auth.js';
 import upload from "../config/multer.js";
 import { createPost, getPosts, likePost, commentPost, getUserPost } from "../controllers/postController.js";
@@ -11,6 +11,13 @@ const router = express.Router();
 
 router.post('/signup', register);
 router.post('/login', login);
+
+
+router.post("/google-login", googleLogin);
+router.post("/google-signup", googleSignup);
+
+
+
 router.post('/add-post', verifyToken, upload.single('image'), createPost);
 router.post('/profile-pic', verifyToken, upload.single('image'), addProfilePic);
 router.post('/add-story', verifyToken, upload.single('file'), addStory);

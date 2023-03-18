@@ -94,8 +94,8 @@ const Profile = () => {
   
 
   return (
-    <Box>
-      <Stack direction="row" justifyContent="space-between" p={1} spacing={2} >
+    <Box flex={4} spacing={3}>
+      <Stack direction="row" justifyContent="space-between"  >
         <Leftbar />
         <Box flex={4} >
           <Box sx={{

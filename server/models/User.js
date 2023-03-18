@@ -20,12 +20,10 @@ const userSchema = mongoose.Schema({
         required: true,
     },
     password: {
-        type: String,
-        required: true,
+        type: String
     },
     phone: {
         type: String,
-        required: true
     },
     isActive: {
         type: Boolean,

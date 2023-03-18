@@ -5,9 +5,22 @@ import CardMedia from '@mui/material/CardMedia';
 import CardContent from '@mui/material/CardContent';
 import React from 'react';
 import { useSelector } from 'react-redux';
+import TimeAgo from 'timeago.js';
+
 
 const Message = ({msg}) => {
   const userId = useSelector((state) => state.user._id);
+  const timeago = new TimeAgo()
+  const formatDate = (date) => {
+    const diffInMillis = Date.now() - date.getTime();
+    // check if difference is greater than 24 hours in milliseconds
+    if (diffInMillis > 24 * 60 * 60 * 1000) {
+      return date.toLocaleDateString(); // show date if older than 24 hours
+    } else {
+      return timeago.format(date); // show time if less than 24 hours old
+    }
+  };
+
  
 
   return (
@@ -36,7 +49,12 @@ const Message = ({msg}) => {
               <Typography variant='p' component='p'>
                {msg?.text}
               </Typography>
+              
             </Box>
+            <Typography variant='subtitle1'>
+                {/* {timeago.format(msg?.createdAt)} */}
+                {formatDate(new Date(msg?.createdAt))}
+              </Typography>
             {/* <Card sx={{
               width: "75%",
               marginTop: "1rem"

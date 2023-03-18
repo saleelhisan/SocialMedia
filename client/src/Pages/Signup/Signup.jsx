@@ -12,8 +12,15 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "../../utils/axios";
 import { signUpPost } from "../../utils/Constants";
+import { GoogleLogin } from '@react-oauth/google';
+import { toast, Toaster } from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import { setLogin } from "../../state";
+
+
 
 const Signup = () => {
+  const dispatch = useDispatch()
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
@@ -49,14 +56,44 @@ const Signup = () => {
         headers: { "Content-Type": "application/json" },
       })
       .then((response) => {
+        
         navigate("/login");
       })
       .catch((err) => {
-        console.log(err);
-      });
+
+        ((error) => {
+            toast.error(error.response.data.msg, {
+                position: "top-center",
+            });
+        })(err);
+    })
     setIsSubmitting(false);
   };
-
+  const handleGoogleLogin = async (response) => {
+    const data = JSON.stringify({ token: response.credential })
+    axios.post('api/google-signup', data, {
+        headers: { "Content-Type": "application/json" },
+    }).then((response) => {
+        
+      dispatch(
+        setLogin({
+            user: response.data.user,
+            token: response.data.token,
+        })
+    );
+    navigate('/');
+         
+        navigate('/');
+    })
+        .catch((err) => {
+            console.log(err);
+            ((error) => {
+                toast.error(error.response.data.msg, {
+                    position: "top-center",
+                });
+            })(err);
+        });
+}
   return (
     <Grid
       container
@@ -79,6 +116,7 @@ const Signup = () => {
             <Box
               flex={1}
               sx={{
+                height: "80vh",
                 padding: "3rem",
                 display: "flex",
                 flexDirection: "column",
@@ -86,7 +124,7 @@ const Signup = () => {
                 justifyContent: "center",
               }}
             >
-              <Typography variant="h4" color="#555" fontWeight="bold">
+              <Typography variant="h4" color="#555" fontWeight="bold" marginTop={"15px"}>
                 Register
               </Typography>
               <Formik
@@ -169,6 +207,28 @@ const Signup = () => {
                     >
                       Signup
                     </Button>
+                    <Box sx={{marginY : '15px'}}>
+                    <GoogleLogin
+                                onSuccess={response => {
+                                    handleGoogleLogin(response)
+                                    // fetch("http://localhost:6001/api/google-login", {
+                                    //     method: "POST",
+                                    //     headers: {
+                                    //         "Content-Type": "application/json"
+                                    //     },
+                                    //     body: JSON.stringify({ token: response.credential })
+                                    // })
+                                    //     .then(response => response.json())
+                                    //     .then(data => console.log(data))
+                                    //     .catch(error => console.error(error));
+                                }}
+                                onError={() => {
+                                    console.log('Login Failed');
+                                }}
+                                useOneTap
+                            />
+                    </Box>
+                    
                   </Form>
                 )}
               </Formik>
@@ -178,7 +238,7 @@ const Signup = () => {
               sx={{
                 background: `linear-gradient(rgba(106,133,182,0.4), rgba(186,200,224,0.4)),  url(${"https://images.pexels.com/photos/2055500/pexels-photo-2055500.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"}), center`,
                 backgroundSize: "cover",
-                height: "70vh",
+                height: "80vh",
                 padding: "3rem",
                 display: "flex",
                 flexDirection: "column",
@@ -217,6 +277,7 @@ const Signup = () => {
                   Login
                 </Button>
               </Link>
+              <Toaster />
             </Box>
           </Stack>
         </Card>

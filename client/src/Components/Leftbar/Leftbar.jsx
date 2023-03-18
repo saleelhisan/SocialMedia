@@ -27,7 +27,7 @@ const Leftbar = () => {
 
 
   return (
-    <Box flex={1}
+    <Box flex={1} 
       sx={{
         display: { xs: "none", md: "block" },
         paddingRight: "3rem",
@@ -42,7 +42,7 @@ const Leftbar = () => {
               <ListItemIcon>
                 <Avatar src={user.profilePic} sx={{ width: 30, height: 30 }} />
               </ListItemIcon>
-              <ListItemText primary="User" />
+              <ListItemText primary={user.username} />
             </ListItemButton>
           </ListItem>
           <ListItem>

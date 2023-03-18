@@ -24,6 +24,8 @@ import PrintIcon from '@mui/icons-material/Print';
 import ShareIcon from '@mui/icons-material/Share';
 import EditIcon from '@mui/icons-material/Edit';
 import io from 'socket.io-client';
+import TimeAgo from 'timeago.js';
+
 
 
 const socket = io.connect("ws://localhost:6001");
@@ -49,6 +51,8 @@ const ChatBox = () => {
     const userId = useSelector((state) => state.user._id);
     const token = useSelector((state) => state.token);
     const scrollRef = useRef();
+    const timeago = new TimeAgo()
+
  
 
     const handleSubmit = async (e) => {
@@ -148,9 +152,8 @@ const ChatBox = () => {
     },[messages])
 
 
-
     return (
-        <Box flex={4} sx={{marginLeft:"1rem"}}>
+        <Box flex={4} sx={{marginLeft:"1rem"}} >
             <Card sx={{
                 boxShadow: `-1px 6px 5px 3px rgba(0,0,0,0.25)`,
                 height: "90vh",
@@ -188,6 +191,7 @@ const ChatBox = () => {
                                 return (
                                     <Box ref={scrollRef} key={index}>
                                         <Message msg={msg} />
+
                                     </Box>
                                 ) 
                             })}

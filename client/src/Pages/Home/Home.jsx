@@ -8,8 +8,8 @@ import AddPost from '../../Components/AddPost/AddPost';
 
 const Home = () => {
   return (
-    <Box >
-      <Stack direction="row" justifyContent="space-between" p={2} spacing={3} >
+    <Box flex={4} spacing={3}>
+      <Stack direction="row" justifyContent="space-between"   >
         <Leftbar />
         <Feed />
         <Rightbar/>

@@ -2,42 +2,49 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import User from "../models/User.js";
 import cloudinary from '../config/cloudinery.js';
+import { OAuth2Client } from "google-auth-library";
 
 
 /* REGISTER USER */
 export const register = async (req, res) => {
-
     try {
-        const {
-            firstName,
+        const { firstName,
             lastName,
             username,
             email,
             phone,
             password
+
         } = req.body;
+        const userExist = await User.findOne({
+            $or: [
+                { email },
+                { username },
+                { phone }
+            ]
+        });
+        if (userExist) return res.status(400).json({ msg: "User Already Exists " });
         const salt = await bcrypt.genSalt();
 
         const passwordHash = await bcrypt.hash(password, salt);
 
         const newUser = new User({
-            firstName,
-            lastName,
             username,
             email,
             password: passwordHash,
-            phone
+            phone,
+            firstName,
+            lastName,
         });
         const savedUser = await newUser.save();
         res.status(201).json(savedUser);
 
 
     } catch (err) {
-        console.log(err);
+        console.log(err.message);
         res.status(500).json({ error: err.message });
     }
 };
-
 
 /* LOGGING IN */
 export const login = async (req, res) => {
@@ -57,6 +64,81 @@ export const login = async (req, res) => {
     }
 };
 
+
+const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+const verify = async (client_id, jwtToken) => {
+    const client = new OAuth2Client(client_id);
+    // Call the verifyIdToken to
+    // varify and decode it
+    const ticket = await client.verifyIdToken({
+        idToken: jwtToken,
+        audience: client_id,
+    });
+    // Get the JSON with all the user info
+    const payload = ticket.getPayload();
+    // This is a JSON object that contains
+    // all the user info
+    console.log(payload, '-------------------');
+    return payload;
+}
+
+
+export const googleSignup = async (req, res) => {
+
+    try {
+
+        console.log(req.body);
+        const { token } = req.body
+        const { name, email, picture, given_name, family_name } = await verify(CLIENT_ID, token);
+        const user = await User.findOne({ email: email });
+        if (user) {
+            const token = jwt.sign({ id: user._id }, process.env.SECRET_KEY);
+            res.status(200).json({ token, user })
+        } else {
+            const newUser = new User({
+                firstName: given_name,
+                lastName: family_name,
+                username: name,
+                email,
+                profilePic: picture
+            });
+
+            const svedUser = await newUser.save();
+            const token = jwt.sign({ id: svedUser._id }, process.env.SECRET_KEY);
+            res.status(200).json({ token, user: svedUser })
+        }
+    } catch (error) {
+        console.log(error.message);
+        res.status(401).json({ success: false, message: "Invalid token" });
+    }
+}
+
+export const googleLogin = async (req, res) => {
+
+    try {
+
+        console.log(req.body);
+        const { token } = req.body
+        const { name, email, picture } = await verify(CLIENT_ID, token);
+        const user = await User.findOne({ email: email });
+        if (user) {
+            const token = jwt.sign({ id: user._id }, process.env.SECRET_KEY);
+            res.status(200).json({ token, user })
+        } else {
+            const newUser = new User({
+                username: name,
+                email,
+                profilePic: picture
+            });
+
+            const svedUser = await newUser.save();
+            const token = jwt.sign({ id: svedUser._id }, process.env.SECRET_KEY);
+            res.status(200).json({ token, user: svedUser })
+        }
+    } catch (error) {
+        res.status(401).json({ success: false, message: "Invalid token" });
+    }
+}
 export const getUser = async (req, res) => {
 
     const userId = req.params.id
@@ -132,7 +214,7 @@ export const followTheUser = async (req, res) => {
             return res.status(400).json({ msg: "User does not exist" })
         }
         if (!user.followers.includes(userId)) { // Check if userId is not already in followers
-            user.followers.push(userId);    
+            user.followers.push(userId);
             await user.save();
         }
 
