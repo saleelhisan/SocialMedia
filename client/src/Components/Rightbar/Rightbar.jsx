@@ -100,10 +100,10 @@ const Rightbar = () => {
   }, []);
 
   return (
-    <Box flex={2} sx={{ display: { xs: "none", lg: "block" } }}>
-      <Box position="fixed" sx={{ width: "300px" }}>
-        <Box>
-          <Box>
+    <Box flex={2} sx={{ display: { xs: "none", lg: "block" }}}>
+      <Box position="fixed" sx={{ width: "300px" ,alignItems: "center",padding:"1%"}} fullWidth>
+        {/* <Box> */}
+          {/* <Box> */}
             <StyledCard
               sx={{
                 paddingInline: "1rem",
@@ -170,8 +170,8 @@ const Rightbar = () => {
                 );
               })}
             </StyledCard>
-          </Box>
-        </Box>
+          {/* </Box> */}
+        {/* </Box> */}
 
         {/* <Box>
           <Box>

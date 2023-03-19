@@ -14,6 +14,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import { setLogout } from '../../state';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
+import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 
 import MarkUnreadChatAltIcon from '@mui/icons-material/MarkUnreadChatAlt';
 
@@ -66,12 +67,12 @@ const Leftbar = () => {
             </Link>
           </ListItem>
           <ListItem>
-            <Link to="/groups" style={{ textDecoration: 'none', color: "inherit" }}>
+            <Link to="/notifications" style={{ textDecoration: 'none', color: "inherit" }}>
             <ListItemButton  >
               <ListItemIcon>
-                <GroupsIcon sx={{ color:"rgb(237, 113, 5)"}}/>
+                <NotificationsActiveIcon sx={{ color:"rgb(237, 113, 5)"}}/>
               </ListItemIcon>
-              <ListItemText primary="Groups" />
+              <ListItemText primary="Notifications" />
             </ListItemButton>
             </Link>
           </ListItem>

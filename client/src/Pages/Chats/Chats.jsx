@@ -10,7 +10,8 @@ const Chats = () => {
 
   return (
     <Box flex={4} spacing={3}>
-      <Stack direction="row" justifyContent="space-between" >
+      <Stack direction="row" justifyContent="space-between" p={1} spacing={2} >
+
         <Leftbar />
         <ChatList />
         <Rightbar />

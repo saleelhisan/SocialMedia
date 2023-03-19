@@ -75,6 +75,7 @@ const ChatBox = () => {
                     'Authorization': `Bearer ${token}`,
                 },
             })
+            console.log(messages,'----------------------------messages');
             setMessages([...messages, res.data]);
             setNewMessage('');
         } catch (error) {

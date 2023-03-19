@@ -8,7 +8,7 @@ import React from 'react'
 const Notification = () => {
     return (
         <Box>
-            <Stack direction="row" justifyContent="space-between" >
+            <Stack direction="row" justifyContent="space-between"  p={1} spacing={2}>
                 <Leftbar />
                 <Notifications />
                 <Rightbar />

@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 import User from "../models/User.js";
 import cloudinary from '../config/cloudinery.js';
 import { OAuth2Client } from "google-auth-library";
+import Notification from '../models/Notification.js';
 
 
 /* REGISTER USER */
@@ -204,18 +205,23 @@ export const getAllUsers = async (req, res) => {
 
 
 export const followTheUser = async (req, res) => {
-
-
-
     try {
         const { userId, userIdToFollow } = req.body;
-        const user = await User.findById(userIdToFollow);
-        if (!user) {
+        const friend = await User.findById(userIdToFollow);
+        if (!friend) {
             return res.status(400).json({ msg: "User does not exist" })
         }
-        if (!user.followers.includes(userId)) { // Check if userId is not already in followers
-            user.followers.push(userId);
-            await user.save();
+        if (!friend.followers.includes(userId)) { // Check if userId is not already in followers
+            friend.followers.push(userId);
+            await friend.save();
+
+            const notification = new Notification({
+                type: "follow",
+                user: friend._id,
+                friend: userId,
+                content: 'Started Following You'
+            })
+            await notification.save();
         }
 
         const currentUser = await User.findById(userId);
@@ -260,6 +266,23 @@ export const unFollowTheUser = async (req, res) => {
         res.status(200).json(currentUser);
     } catch (error) {
         res.status(500).json(error)
+    }
+}
+
+
+
+export const getNotifications = async (req, res)=>{
+    try {
+        const { id } = req.user;
+        const notifiactions = await Notification.find({ user: id })
+            .populate('friend', 'username profilePic')
+            .populate('postId', 'image')
+            .sort({ createdAt: -1 })
+            .exec();
+        res.status(200).json(notifiactions);
+    } catch (err) {
+        console.log(err);
+        res.status(500).json(err);
     }
 }
 

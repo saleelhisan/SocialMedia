@@ -1,5 +1,6 @@
 import Post from '../models/Post.js';
 import cloudinary from '../config/cloudinery.js';
+import Notification from '../models/Notification.js';
 
 
 export const createPost = async (req, res) => {
@@ -72,6 +73,15 @@ export const likePost = async (req, res) => {
             post.likes.delete(loggedInUserId);
         } else {
             post.likes.set(loggedInUserId, true);
+
+            const notification = new Notification({
+                type: "like",
+                user: post.author,
+                friend: loggedInUserId,
+                postId: post._id,
+                content: 'Liked your post'
+            })
+            await notification.save();
         }
 
         const updatedPost = await Post.findByIdAndUpdate(
@@ -98,7 +108,14 @@ export const commentPost = async (req, res) => {
         const { comment, loggedInUserId } = req.body;
         const post = await Post.findById(id);
         post.comments.unshift({ text: comment, author: loggedInUserId, isDelete: false });
-
+        const notification = new Notification({
+            type: "Comment",
+            user: post.author,
+            friend: loggedInUserId,
+            postId: post._id,
+            content: 'commented on your post'
+        })
+        await notification.save();
         const savedPost = await post.save();
         
         const populatedPost = await Post.findById(savedPost._id)
